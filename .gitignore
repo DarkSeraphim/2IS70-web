@@ -1,5 +1,15 @@
+# venv setup
 Include/
 Lib/
 Scripts/
 pyvenv.cfg
+
+# some pip stuff
 pip-selfcheck.json
+
+# hard link for easier access
+django-admin.py
+
+# sqlite databases
+*.sqlite3
+*.db
