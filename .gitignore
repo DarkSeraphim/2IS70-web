@@ -3,6 +3,7 @@ Include/
 Lib/
 Scripts/
 pyvenv.cfg
+myvenv/
 
 # some pip stuff
 pip-selfcheck.json
@@ -13,3 +14,6 @@ django-admin.py
 # sqlite databases
 *.sqlite3
 *.db
+
+#pycache
+__pycache__/
