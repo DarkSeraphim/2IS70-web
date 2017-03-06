@@ -24,4 +24,4 @@ call([PIP_PATH, 'install', 'Django']);
 if is_windows:
   call(['cmd', '/c', 'mklink', '/H', 'django-admin.py', 'Lib/site-packages/django/bin/django-admin.py'])
 else: 
-  call(['ln', 'django-admin.py', 'Lib/site-packages/django/bin/django-admin.py'])
+  call(['ln', 'Lib/site-packages/django/bin/django-admin.py', 'django-admin.py'])
