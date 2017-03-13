@@ -17,3 +17,6 @@ django-admin.py
 
 #pycache
 **/__pycache__/
+
+# added by Thijs M
+bin/
