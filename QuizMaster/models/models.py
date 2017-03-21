@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import Group
 from django.conf import settings
 
 class Question(models.Model):
@@ -37,7 +38,7 @@ class Quiz(models.Model):
   close_at = models.DateTimeField()
   time_limit = models.IntegerField()
   published = models.BooleanField()
-  group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='quizes')
+  group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quizes')
 
 """
 Group_Quiz
@@ -55,7 +56,7 @@ class Question(models.Model):
   text = models.TextField()
   is_open = models.BooleanField()
   weight = models.PositiveSmallIntegerField() # Eliminates precision errors with later math
-  answer = models.ForeignKey('QuestionAnswer', on_delete=models.CASCADE)
+  answer = models.OneToOneField('QuestionAnswer', on_delete=models.CASCADE, related_name='+')
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
   
 class QuestionImage(models.Model):
