@@ -1,9 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-class Question(models.Model):
-    question = models.CharField(max_length=200)
-
 class UserType(models.Model):
   STUDENT = 'student'
   TEACHER = 'teacher'
@@ -25,7 +22,7 @@ class UserType(models.Model):
   users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='groups')
 """
 
-""" 
+"""
 User_Group:
   user -> fkey User
   group -> fkey Group
@@ -50,18 +47,18 @@ class QuizComment(models.Model):
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='comments')
   reply_to = models.ForeignKey('self', on_delete=models.CASCADE, related_name='replies')
   created = models.DateTimeField()
-  
+
 class Question(models.Model):
   text = models.TextField()
   is_open = models.BooleanField()
   weight = models.PositiveSmallIntegerField() # Eliminates precision errors with later math
   answer = models.ForeignKey('QuestionAnswer', on_delete=models.CASCADE)
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
-  
+
 class QuestionImage(models.Model):
   image = models.TextField()
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='image')
-  
+
 class QuestionAudio(models.Model):
   audio = models.TextField()
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='audio')
@@ -69,7 +66,7 @@ class QuestionAudio(models.Model):
 class QuestionAnswer(models.Model):
   text = models.CharField(max_length=255, db_index=True)
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-  
+
 class SubmittedQuiz(models.Model):
   submitted_at = models.DateTimeField()
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
