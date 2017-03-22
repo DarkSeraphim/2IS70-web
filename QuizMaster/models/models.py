@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import Group
 from django.conf import settings
+from datetime import datetime
 
 class UserType(models.Model):
   STUDENT = 'student'
@@ -31,10 +32,10 @@ User_Group:
 
 class Quiz(models.Model):
   pass_threshold = models.PositiveSmallIntegerField()
-  start_at = models.DateTimeField()
-  close_at = models.DateTimeField()
-  time_limit = models.IntegerField()
-  published = models.BooleanField()
+  start_at = models.DateTimeField(default = datetime.now, blank = True)
+  close_at = models.DateTimeField(default = datetime.now, blank = True)
+  time_limit = models.IntegerField(null = True)
+  published = models.BooleanField(default = False)
   group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quizes')
 
 """
