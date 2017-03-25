@@ -37,6 +37,7 @@ class Quiz(models.Model):
   time_limit = models.IntegerField(null = True)
   published = models.BooleanField(default = False)
   group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quizes')
+  creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quizes')
 
 """
 Group_Quiz
