@@ -5,15 +5,6 @@ from rest_framework import generics
 from QuizMaster.models.models import UserType, Quiz, QuizComment, Question, QuestionImage, QuestionAudio, QuestionAnswer, SubmittedQuiz, SubmittedQuizAnswer
 from QuizMaster.serializers import UserTypeSerializer, QuizSerializer, QuizCommentSerializer, QuestionSerializer, QuestionImageSerializer, QuestionAudioSerializer, QuestionAnswerSerializer, SubmittedQuizSerializer, SubmittedQuizAnswerSerializer
 
-def index(request):
-  return HttpResponse("Hello world!")
-
-def json(request):
-  return JsonResponse({
-    'foo': 1,
-    'bar': 'bat'
-  })
-
 class UserTypeList(generics.ListCreateAPIView):
     queryset = UserType.objects.all()
     serializer_class = UserTypeSerializer
