@@ -30,14 +30,28 @@ User_Group:
   group -> fkey Group
 """
 
+class GroupMeta(models.Model):
+  access_code = models.CharField(max_length=32)
+  creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='own_groups')
+  group = models.OneToOneField(Group, on_delete=models.CASCADE, related_name='meta')
+
 class Quiz(models.Model):
-  pass_threshold = models.PositiveSmallIntegerField()
-  start_at = models.DateTimeField(default = datetime.now, blank = True)
-  close_at = models.DateTimeField(default = datetime.now, blank = True)
-  time_limit = models.IntegerField(null = True)
-  published = models.BooleanField(default = False)
-  group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quizes')
+  name = models.CharField(max_length=50)
   creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quizes')
+  groups = models.ManyToManyField(Group,
+        through='Membership',
+        through_fields=('quiz', 'group'),
+        related_name='quizes')
+  start_at = models.BigIntegerField(default = -1, blank = True)
+  close_at = models.BigIntegerField(default = -1, blank = True)
+  time_limit = models.IntegerField(null = True)
+  pass_threshold = models.PositiveSmallIntegerField()
+  published = models.BooleanField(default = False)
+
+# TODO: rename
+class Membership(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
 
 """
 Group_Quiz
@@ -55,15 +69,15 @@ class Question(models.Model):
   text = models.TextField()
   is_open = models.BooleanField()
   weight = models.PositiveSmallIntegerField() # Eliminates precision errors with later math
-  answer = models.OneToOneField('QuestionAnswer', on_delete=models.CASCADE, related_name='+')
+  correct_answer = models.OneToOneField('QuestionAnswer', on_delete=models.CASCADE, related_name='+', null=True)
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
 
 class QuestionImage(models.Model):
-  image = models.TextField()
+  path = models.TextField()
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='image')
 
 class QuestionAudio(models.Model):
-  audio = models.TextField()
+  path = models.TextField()
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='audio')
 
 class QuestionAnswer(models.Model):
@@ -71,7 +85,7 @@ class QuestionAnswer(models.Model):
   question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
 
 class SubmittedQuiz(models.Model):
-  submitted_at = models.DateTimeField()
+  submitted_at = models.BigIntegerField()
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='submitted')
 

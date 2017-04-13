@@ -1,16 +1,21 @@
 from django.conf.urls import url
 from django.contrib import admin
 
-from QuizMaster.views import views, usercontroller, groupcontroller, testcontroller
-import RequestHandler
-RH = RequestHandler
+from QuizMaster.views import (views, 
+                              usercontroller, 
+                              groupcontroller, 
+                              testcontroller)
 
+from QuizMaster.views.requesthandler import RequestHandler
+
+from .models.models import UserType
+
+RH = RequestHandler
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     #url(r'^index/', views.index),
     #url(r'^json/', views.json),
-
     # Tom's API
     url(r'^api/usertype/$', views.UserTypeList.as_view()),
     url(r'^api/usertype/(?P<pk>[0-9]+)/$', views.UserTypeDetail.as_view()),
@@ -36,11 +41,14 @@ urlpatterns = [
         RH.of('POST', usercontroller.register)
           .build()), # POST
     url(r'^user/login/?$', 
-        RH.of('POST', usercontroller.login)
+        RH.of('POST', usercontroller.do_login)
           .build()), # POST
-    url(r'^groups/?$' 
+    url(r'^user/logout/?$',
+        RH.of('GET', usercontroller.do_logout)
+          .build()),
+    url(r'^groups/?$',
         RH.of('GET', groupcontroller.getAll)
-          .forUserTypes(UserType.STUDENT, UserType.TEACHER)
+          .forUserTypes([UserType.STUDENT, UserType.TEACHER])
           .build()), # GET
     url(r'^group/?$', 
         RH.of(['POST', 'PUT', 'DELETE'], groupcontroller.manageGroup)
@@ -52,10 +60,10 @@ urlpatterns = [
           .build()), # POST, DELETE
     url(r'^tests/?$', 
         RH.of('GET', testcontroller.getAll)
-          .forUserTypes(UserType.STUDENT, UserType.TEACHER)
+          .forUserTypes([UserType.STUDENT, UserType.TEACHER])
           .build()), # GET
     url(r'^test/?$', 
-        RH.of(['POST', 'PUT', 'DELETE'], testcontroller.manageTest)
+        RH.of(['POST','DELETE'], testcontroller.manage)
           .forUserTypes(UserType.TEACHER)
           .build()), # POST, PUT?, DELETE
     url(r'^test/submit/?$', 
