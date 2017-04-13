@@ -236,8 +236,8 @@ def createTest(request):
     "questions": res_questions
   })  
 
-def deleteTest(test, request):
-  pk = request.POST['test_id']
+def deleteTest(request):
+  pk = request.GET['quiz_id']
   if not pk:
     return HttpResponseBadRequest()
   try:
