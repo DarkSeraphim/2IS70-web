@@ -17,7 +17,10 @@ from random import shuffle
 
 def getAll(request):
   user = request.user
-  quizes = Quiz.objects.filter(groups__user=user)
+  if user.type.type == UserType.STUDENT:
+    quizes = Quiz.objects.filter(groups__user=user)
+  else: # Teacher
+    quizes = Quiz.objects.filter(creator=user)
   res_quizes = []
   for quiz in quizes:
     res_groups = []

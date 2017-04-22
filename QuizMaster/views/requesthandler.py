@@ -27,7 +27,11 @@ class RequestHandler:
 
     def handle(self, request):
         if request.method not in self.methods:
+            print ("Method does not exist")
             return HttpResponseBadRequest()
+
+        print ("DEBUG")
+        print (request.content_type, request.META['CONTENT_LENGTH'], request.body.decode('utf8'))
 
         if (request.method != 'GET' 
             and request.content_type == 'application/json'
@@ -40,8 +44,8 @@ class RequestHandler:
 
         
         if self.needs_auth:
-            print ("User type was {}".format(request.user.type.type))
-            print ("Types accepted were {}".format(self.user_types))
+            #print ("User type was {}".format(request.user.type.type))
+            #print ("Types accepted were {}".format(self.user_types))
             if not request.user or not request.user.is_authenticated:
                 return HttpResponse(status=401)
             if request.user.type.type not in self.user_types:

@@ -16,10 +16,20 @@ def getAll(request):
   for group in rels.all():
     if type(group) is GroupMeta:
       group = group.group
+    res_members = []
+    for user in group.user_set.all():
+      res_members.append({
+        "id": user.pk,
+        "email": user.email,
+        "name": user.first_name,
+        "type": user.type.type
+      })
+    
     groups.append({
       "id": group.pk,
       "name": group.name,
-      "access_code": group.meta.access_code
+      "access_code": group.meta.access_code,
+      "members": res_members
     })
   return JsonResponse(groups, safe=False)
 
@@ -32,20 +42,32 @@ def manageGroup(request):
     return deleteGroup(request)
 
 def createGroup(request):
-  name = request.POST['name']
-  if not name:
+  if 'name' not in request.POST or 'access_code' not in request.POST:
     return HttpResponseBadRequest()
+
+  name = request.POST['name']
+  access_code = request.POST['access_code']
+  if not name or not access_code:
+    return HttpResponseBadRequest()
+
+  try:
+    temp = GroupMeta.objects.get(access_code=access_code)
+    return HttpResponse(status=409)
+  except GroupMeta.DoesNotExist:
+    pass
+
   try:
     group = Group.objects.get(name=name)
     return HttpResponse(status=409)
   except Group.DoesNotExist:
     pass
+
   group = Group()
   group.name = name
   group.save()
 
   meta = GroupMeta()
-  meta.access_code = str(uuid.uuid4())[:6]
+  meta.access_code = access_code # str(uuid.uuid4())[:6]
   meta.group = group
   meta.creator = request.user
   meta.save()
@@ -59,6 +81,7 @@ def createGroup(request):
 def updateGroup(request):
   pk = request.GET['group_id']
   name = request.POST['name']
+  access_code = request.POST['access_code']
   
   if not pk or not name:
     return HttpResponseBadRequest()
@@ -79,9 +102,13 @@ def updateGroup(request):
   
   group.name = name
   group.save()
+  meta = group.meta
+  meta.access_code = access_code
+  meta.save()
   return JsonResponse({
     "id": group.pk,
-    "name": group.name  
+    "name": group.name,  
+    "access_code": meta.access_code
   })
 
 def deleteGroup(request):
