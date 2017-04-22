@@ -27,11 +27,8 @@ class RequestHandler:
 
     def handle(self, request):
         if request.method not in self.methods:
-            print ("Method does not exist")
             return HttpResponseBadRequest()
 
-        print ("DEBUG")
-        print (request.content_type, request.META['CONTENT_LENGTH'], request.body.decode('utf8'))
 
         if (request.method != 'GET' 
             and request.content_type == 'application/json'
