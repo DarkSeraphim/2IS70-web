@@ -3,7 +3,7 @@ from django.http import (HttpResponse,
                          HttpResponseForbidden,
                          HttpResponseNotFound,
                          JsonResponse)
-
+from django.contrib.auth.models import User
 from QuizMaster.models.models import Group, GroupMeta, UserType
 import uuid
 
@@ -164,6 +164,8 @@ def leaveGroup(request):
 
   user = request.user
   if 'account_id' in request.GET:
+    print ("Creator pk: ", group.meta.creator.pk)
+    print ("User pk: ", user.pk)
     if group.meta.creator.pk != user.pk:
       return HttpResponseForbidden()
     try:

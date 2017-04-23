@@ -268,11 +268,12 @@ def deleteTest(request):
 
 def submit(request):
   data = request.POST
-  if not validate(data, 'quiz_id', 'submitted_at', 'answers'):
+  if not validate(data, 'quiz', 'submitted_at', 'answers'):
+    print("Invalid data")
     return HttpResponseBadRequest()
   
   try:
-    quiz = Quiz.objects.get(pk=data['quiz_id'])
+    quiz = Quiz.objects.get(pk=data['quiz']['id'])
   except Quiz.DoesNotExist:
     return HttpResponseNotFound()
 
@@ -290,12 +291,12 @@ def submit(request):
     return HttpResponseBadRequest()
 
   for adata in answerdata:
-    if not validate(adata, 'question_id', 'answer_id', 'text'):
+    if not validate(adata, 'question', 'answer', 'answer_text'):
       return HttpResponseBadRequest()
     
-    text = adata['text']
+    text = adata['answer_text']
     try:
-      question = Question.objects.get(pk=adata['question_id'], quiz=quiz)
+      question = Question.objects.get(pk=adata['question']['id'], quiz=quiz)
     except Question.DoesNotExist:
       return HttpResponseBadRequest()
 
@@ -306,7 +307,7 @@ def submit(request):
         pass # Wrong answer, sucks to suck
     else:
       try:
-        answer = QuestionAnswer.objects.get(pk=adata['answer_id'], question=question)
+        answer = QuestionAnswer.objects.get(pk=adata['answer']['id'], question=question)
       except QuestionAnswer.DoesNotExist:
         return HttpResponseBadRequest()
 

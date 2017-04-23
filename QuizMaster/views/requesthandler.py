@@ -33,13 +33,14 @@ class RequestHandler:
         #print ("DEBUG")
         #print (request.content_type, request.META['CONTENT_LENGTH'], request.body.decode('utf8'))
 
-        if request.path == '/quiz' and request.method == 'POST':
-            print ("Got POST to /quiz!")
+        if request.path == '/quiz/submit' and request.method == 'POST':
+            print ("Got POST to /quiz/submit!")
             print ("Content-Type:", request.content_type)
             for key in request.POST:
                 print ("Found POST key:", key)
             for key in request.FILES:
                 print ("Found file:", key)
+            print ("Content: ", request.body.decode('utf8'))
         if request.content_type == 'multipart/form-data' and 'data' in request.POST:
             data = request.POST['data']
             if len(data) > 0:

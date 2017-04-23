@@ -56,17 +56,17 @@ urlpatterns = [
           .build()), # POST, PUT?, DELETE
     url(r'^group/subscription/?$', 
         RH.of(['POST', 'DELETE'], groupcontroller.subscription)
-          .forUserTypes(UserType.STUDENT)
+          .forUserTypes([UserType.STUDENT, UserType.TEACHER])
           .build()), # POST, DELETE
-    url(r'^tests/?$', 
+    url(r'^quizes/?$', 
         RH.of('GET', testcontroller.getAll)
           .forUserTypes([UserType.STUDENT, UserType.TEACHER])
           .build()), # GET
-    url(r'^test/?$', 
+    url(r'^quiz/?$', 
         RH.of(['POST','DELETE'], testcontroller.manage)
           .forUserTypes(UserType.TEACHER)
           .build()), # POST, PUT?, DELETE
-    url(r'^test/submit/?$', 
+    url(r'^quiz/submit/?$', 
         RH.of('POST', testcontroller.submit)
           .forUserTypes(UserType.STUDENT)
           .build()), # POST
