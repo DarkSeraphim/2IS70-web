@@ -163,6 +163,14 @@ def leaveGroup(request):
     return HttpResponseNotFound()
 
   user = request.user
+  if 'account_id' in request.GET:
+    if group.meta.creator.pk != user.pk:
+      return HttpResponseForbidden()
+    try:
+      user = User.objects.get(pk=int(request.GET['account_id']))
+    except User.DoesNotExist:
+      return HttpResponseBadRequest()
+
   if not group.user_set.filter(pk=user.pk).exists():
   # if user not in group.users: # Actually fix this, rofl
     return HttpResponse(status=409)
