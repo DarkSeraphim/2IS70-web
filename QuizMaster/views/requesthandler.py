@@ -27,10 +27,27 @@ class RequestHandler:
 
     def handle(self, request):
         if request.method not in self.methods:
+            print ("Method does not exist")
             return HttpResponseBadRequest()
 
+        #print ("DEBUG")
+        #print (request.content_type, request.META['CONTENT_LENGTH'], request.body.decode('utf8'))
 
-        if (request.method != 'GET' 
+        if request.path == '/quiz' and request.method == 'POST':
+            print ("Got POST to /quiz!")
+            print ("Content-Type:", request.content_type)
+            for key in request.POST:
+                print ("Found POST key:", key)
+            for key in request.FILES:
+                print ("Found file:", key)
+        if request.content_type == 'multipart/form-data' and 'data' in request.POST:
+            data = request.POST['data']
+            if len(data) > 0:
+                try:
+                    request.POST = json.loads(request.POST['data'])
+                except:
+                    return HttpResponse(status=422) 
+        elif (request.method != 'GET' 
             and request.content_type == 'application/json'
             and 'CONTENT_LENGTH' in request.META
             and int(request.META['CONTENT_LENGTH']) > 0):

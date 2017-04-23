@@ -7,13 +7,17 @@ from django.http import (HttpResponse,
 from django.contrib.auth.models import User
 from QuizMaster.models.models import (Group, 
                                       Quiz,
-                                      Question, 
+                                      Question,
+                                      QuestionImage,
+                                      QuestionAudio,
                                       QuestionAnswer,
                                       SubmittedQuiz, 
                                       SubmittedQuizAnswer,
                                       Membership,
                                       UserType)
 from random import shuffle
+from django.conf import settings
+import os
 
 def getAll(request):
   user = request.user
@@ -29,6 +33,7 @@ def getAll(request):
         "id": group.pk,
         "name": group.name
       })
+      
     res_questions = []
     for question in quiz.questions.all():
       res_answers = []
@@ -87,7 +92,11 @@ def validate(data, *fields):
   return True
 
 def writeUserFile(file, path):
-  with open(SITE_ROOT + '/files/' + path, 'wb+') as destination:
+  filepath = settings.BASE_DIR + '/files/' + path
+  dir = os.path.dirname(filepath)
+  if not os.path.exists(dir):
+    os.makedirs(dir)
+  with open(filepath, 'wb+') as destination:
     for chunk in file.chunks():
       destination.write(chunk)
 
@@ -135,7 +144,7 @@ def createTest(request):
   res_groups = []
   for groupId in data['groups']:
     try:
-      group = Group.objects.get(pk=groupId)
+      group = Group.objects.get(pk=groupId['id'])
       groups.append(group)
       res_groups.append({
         "id": group.pk,
@@ -157,7 +166,7 @@ def createTest(request):
   for group in groups:
     Membership.objects.create(group=group, quiz=quiz)
 
-  tid = 1
+  tid = 0
   res_questions = []
   for qdata in data['questions']:
     question = Question()
@@ -190,7 +199,10 @@ def createTest(request):
         question.correct_answer = answer
         question.save()
         first = False
-        res_question['correct_answer'] = answer.pk
+        res_question['correct_answer'] = {
+          "id": answer.pk,
+          "text": answer.text
+        }
 
     res_question['answers'] = res_answers
 
@@ -198,7 +210,7 @@ def createTest(request):
     if audiofilekey in request.FILES:
       audiofile = request.FILES[audiofilekey]
       qa = QuestionAudio()
-      path = quiz.pk + '/' + question.id + '/audio.mp3'
+      path = str(quiz.pk) + '/' + str(question.id) + '/audio.mp3'
       qa.path = path
       qa.question = question
       qa.save()
@@ -211,11 +223,11 @@ def createTest(request):
     if imagefilekey in request.FILES:
       imagefile = request.FILES[imagefilekey]
       qi = QuestionImage()
-      path = quiz.pk + '/' + question.id + '/image.jpg'
+      path = str(quiz.pk) + '/' + str(question.id) + '/image.jpg'
       qi.path = path
       qi.question = question
       qi.save()
-      writeUserFile(audiofile, path)
+      writeUserFile(imagefile, path)
       res_question['image'] = {
         "id": qi.pk,
         "path": path
